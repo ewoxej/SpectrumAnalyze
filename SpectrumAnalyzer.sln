@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumAnalyzer", "SpectrumAnalyzer.csproj", "{759C1D6C-98B2-462C-B578-971D60672649}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{759C1D6C-98B2-462C-B578-971D60672649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{759C1D6C-98B2-462C-B578-971D60672649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{759C1D6C-98B2-462C-B578-971D60672649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{759C1D6C-98B2-462C-B578-971D60672649}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E14A18F-D9A3-4DD5-83F2-E9AAC9CD0E5E}
+	EndGlobalSection
+EndGlobal
