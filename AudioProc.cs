@@ -3,39 +3,42 @@ using System.Collections.Generic;
 
 namespace SpectrumAnalyzer
 {
-    public partial class AudioProc
+    public class AudioProc
     {
-        private int index;
-        private NAudio.Wave.WaveInEvent wvin;
+        public int DeviceIndex { get; set; }
+        private NAudio.Wave.WaveInEvent wvEvent;
         List<Int16> dataPcm;
         double[] dataFft;
-        public AudioProc(int deviceIndex)
-        {
-            index = deviceIndex;
-        }
-
         private void AudioMonitorInitialize(
                 int DeviceIndex, int sampleRate = 32_000,
                 int bitRate = 16, int channels = 1,
                 int bufferMilliseconds = 50, bool start = true
             )
         {
-            if( wvin == null )
+            if( wvEvent == null )
             {
-                wvin = new NAudio.Wave.WaveInEvent();
-                wvin.DeviceNumber = DeviceIndex;
-                wvin.WaveFormat = new NAudio.Wave.WaveFormat( sampleRate, bitRate, channels );
-                wvin.DataAvailable += OnDataAvailable;
-                wvin.BufferMilliseconds = bufferMilliseconds;
+                wvEvent = new NAudio.Wave.WaveInEvent
+                {
+                    DeviceNumber = DeviceIndex,
+                    WaveFormat = new NAudio.Wave.WaveFormat( sampleRate, bitRate, channels )
+                };
+                wvEvent.DataAvailable += OnDataAvailable;
+                wvEvent.BufferMilliseconds = bufferMilliseconds;
                 if( start )
-                    wvin.StartRecording();
+                    wvEvent.StartRecording();
             }
         }
 
-
+        public List<string> ScanSoundCards()
+        {
+            List<string> list = new List<string>();
+            for( int i = 0; i < NAudio.Wave.WaveIn.DeviceCount; i++ )
+                list.Add( NAudio.Wave.WaveIn.GetCapabilities( i ).ProductName );
+            return list;
+        }
         private void OnDataAvailable( object sender, NAudio.Wave.WaveInEventArgs args )
         {
-            int bytesPerSample = wvin.WaveFormat.BitsPerSample / 8;
+            int bytesPerSample = wvEvent.WaveFormat.BitsPerSample / 8;
             int samplesRecorded = args.BytesRecorded / bytesPerSample;
             if( dataPcm == null )
                 dataPcm = new List<Int16>();
@@ -43,7 +46,7 @@ namespace SpectrumAnalyzer
                 dataPcm.Add( BitConverter.ToInt16( args.Buffer, i * bytesPerSample ) );
         }
 
-        private void updateFFT()
+        private void UpdateFFT()
         {
             // the PCM size to be analyzed with FFT must be a power of 2
             int fftPoints = 2;
@@ -67,33 +70,33 @@ namespace SpectrumAnalyzer
             }
         }
 
-        public void startRecording()
+        public void StartRecording()
         {
-            AudioMonitorInitialize( index );
+            AudioMonitorInitialize( DeviceIndex );
             if( dataPcm != null )
                 dataPcm.Clear();
             dataFft = null;
         }
 
-        public double[] getFft()
+        public double[] GetFft()
         {
             if( dataFft == null )
-                updateFFT();
+                UpdateFFT();
             return dataFft;
         }
-        public double getSampleRate()
+        public double GetSampleRate()
         {
-            return wvin.WaveFormat.SampleRate;
+            return wvEvent.WaveFormat.SampleRate;
         }
-        public void stopRecording()
+        public void StopRecording()
         {
             if( dataPcm == null )
                 return;
-            updateFFT();
-            if( wvin != null )
+            UpdateFFT();
+            if( wvEvent != null )
             {
-                wvin.StopRecording();
-                wvin = null;
+                wvEvent.StopRecording();
+                wvEvent = null;
             }
         }
     }

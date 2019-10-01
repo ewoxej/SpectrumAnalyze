@@ -7,11 +7,11 @@
         {
             seconds = sec;
         }
-        public void add( int sec = 1 )
+        public void Add( int sec = 1 )
         {
             seconds += sec;
         }
-        public void reset()
+        public void Reset()
         {
             seconds = 0;
         }

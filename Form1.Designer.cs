@@ -37,11 +37,15 @@
             this.lbl_name = new System.Windows.Forms.Label();
             this.btn_close = new System.Windows.Forms.Button();
             this.plot1 = new ScottPlot.FormsPlot();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // rec_btn
             // 
-            this.rec_btn.Location = new System.Drawing.Point(73, 24);
+            this.rec_btn.Enabled = false;
+            this.rec_btn.Location = new System.Drawing.Point(139, 24);
             this.rec_btn.Name = "rec_btn";
             this.rec_btn.Size = new System.Drawing.Size(65, 23);
             this.rec_btn.TabIndex = 0;
@@ -52,7 +56,7 @@
             // stop_btn
             // 
             this.stop_btn.Enabled = false;
-            this.stop_btn.Location = new System.Drawing.Point(144, 24);
+            this.stop_btn.Location = new System.Drawing.Point(218, 24);
             this.stop_btn.Name = "stop_btn";
             this.stop_btn.Size = new System.Drawing.Size(65, 23);
             this.stop_btn.TabIndex = 1;
@@ -65,14 +69,14 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 74);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(136, 355);
+            this.listBox1.Size = new System.Drawing.Size(136, 420);
             this.listBox1.TabIndex = 2;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
             // 
             // lbl_timer
             // 
             this.lbl_timer.AutoSize = true;
-            this.lbl_timer.Location = new System.Drawing.Point(215, 29);
+            this.lbl_timer.Location = new System.Drawing.Point(289, 29);
             this.lbl_timer.Name = "lbl_timer";
             this.lbl_timer.Size = new System.Drawing.Size(34, 13);
             this.lbl_timer.TabIndex = 3;
@@ -80,7 +84,7 @@
             // 
             // btn_open
             // 
-            this.btn_open.Location = new System.Drawing.Point(2, 24);
+            this.btn_open.Location = new System.Drawing.Point(541, 24);
             this.btn_open.Name = "btn_open";
             this.btn_open.Size = new System.Drawing.Size(65, 23);
             this.btn_open.TabIndex = 4;
@@ -90,6 +94,7 @@
             // 
             // btn_save
             // 
+            this.btn_save.Enabled = false;
             this.btn_save.Location = new System.Drawing.Point(612, 24);
             this.btn_save.Name = "btn_save";
             this.btn_save.Size = new System.Drawing.Size(65, 23);
@@ -102,7 +107,7 @@
             // 
             this.lbl_name.AutoSize = true;
             this.lbl_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbl_name.Location = new System.Drawing.Point(377, 21);
+            this.lbl_name.Location = new System.Drawing.Point(377, 24);
             this.lbl_name.Name = "lbl_name";
             this.lbl_name.Size = new System.Drawing.Size(72, 24);
             this.lbl_name.TabIndex = 6;
@@ -120,16 +125,47 @@
             // 
             // plot1
             // 
-            this.plot1.Location = new System.Drawing.Point(218, 79);
+            this.plot1.Location = new System.Drawing.Point(209, 74);
             this.plot1.Name = "plot1";
-            this.plot1.Size = new System.Drawing.Size(500, 350);
+            this.plot1.Size = new System.Drawing.Size(639, 383);
             this.plot1.TabIndex = 9;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(12, 24);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 10;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(252, 474);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(127, 20);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Peak frequency: ";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 55);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Opened plots:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(876, 519);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.plot1);
             this.Controls.Add(this.btn_close);
             this.Controls.Add(this.lbl_name);
@@ -157,6 +193,9 @@
         private System.Windows.Forms.Label lbl_name;
         private System.Windows.Forms.Button btn_close;
         private ScottPlot.FormsPlot plot1;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

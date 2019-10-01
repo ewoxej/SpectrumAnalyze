@@ -2,64 +2,94 @@
 using System.Windows.Forms;
 using ScottPlot;
 using System.Drawing;
-
-public class SpectrumPlot
+using System;
+namespace SpectrumAnalyzer
 {
-    public SpectrumPlot( FormsPlot chart, ListBox lbox )
-    {
-        m_chart = chart;
-        listBox = lbox;
-        sRate = 32000;
-        plots = new Dictionary<string, double[]>();
-        m_chart.plt.Clear();
-        m_chart.plt.YLabel( "Power (db)" );
-        m_chart.plt.XLabel( "Frequency (kHz)" );
-        m_chart.plt.PlotHLine( 0, color: Color.Black, lineWidth: 1 );
-        m_chart.plt.AxisAuto();
-        m_chart.plt.TightenLayout();
-    }
-    public void AddPlot( double[] vals, string plotName )
-    {
-        plots.Add( plotName, vals );
-        listBox.Items.Add( plotName );
-        listBox.SetSelected( listBox.Items.Count-1, true );
-        double fftSpacing = sRate / vals.Length;
-        m_chart.plt.PlotSignal( vals, sampleRate: fftSpacing, markerSize: 0 );
-        m_chart.Render();
-    }
 
-    public void RemovePlot( string plotName )
+    public class SpectrumPlot
     {
-        m_chart.plt.Clear();
-        listBox.Items.Remove( plotName );
-        listBox.SetSelected( listBox.Items.Count - 1, true );
-        plots.Remove( plotName );
-        m_chart.plt.PlotHLine( 0, color: Color.Black, lineWidth: 1 );
-
-        foreach(var i in plots)
+        public SpectrumPlot( FormsPlot argPlot, ListBox lbox )
         {
-            double fftSpacing = sRate / i.Value.Length;
-            m_chart.plt.PlotSignal( i.Value, sampleRate: fftSpacing, markerSize: 0 );
+            plot = argPlot;
+            listBox = lbox;
+            SRate = defaultSampleRate;
+            plots = new Dictionary<string, double[]>();
+            plot.plt.Clear();
+            plot.plt.YLabel( "Power (db)" );
+            plot.plt.XLabel( "Frequency (kHz)" );
+            plot.plt.PlotHLine( 0, color: Color.Black, lineWidth: 1 );
+            plot.plt.AxisAuto();
+            plot.plt.TightenLayout();
         }
-        m_chart.Render();
-    }
-    public double[] GetData( string key )
-    {
-        return plots[key];
-    }
-    public void RenamePlot( string oldname, string newname )
-    {
-        var oldvalue = plots[oldname];
-        plots.Add( newname, oldvalue );
-        plots.Remove( oldname );
-    }
+        public void AddPlot( double[] vals, string plotName )
+        {
+            try
+            {
+                plots.Add( plotName, vals );
+            }
+            catch( ArgumentException )
+            {
+                MessageBox.Show( "This file already opened" );
+                return;
+            }
+            listBox.Items.Add( plotName );
+            listBox.SetSelected( listBox.Items.Count - 1, true );
+            double fftSpacing = SRate / vals.Length;
+            plot.plt.PlotSignal( vals, sampleRate: fftSpacing, markerSize: 0 );
+            plot.Render();
+        }
 
-    private FormsPlot m_chart;
-    private ListBox listBox;
-    private Dictionary<string, double[]> plots;
-    private double sRate;
-    public void SetSampleRate(double rate)
-    {
-        sRate = rate;
+        public int CalculatePeakFrequency( string plotName )
+        {
+            if( plotName == "" ) return 0;
+            double max = 0;
+            foreach( var i in plots )
+            {
+                var a = i.Value;
+            }
+            var array = plots[plotName];
+            int index = 0;
+            foreach( var i in array )
+            {
+                if( i > max ) max = i;
+                index++;
+            }
+            return index;
+        }
+        public void RemovePlot( string plotName )
+        {
+            if( plotName == null ) return;
+            plot.plt.Clear();
+            listBox.Items.Remove( plotName );
+            if( listBox.Items.Count != 0 )
+                listBox.SetSelected( listBox.Items.Count - 1, true );
+            if( plotName == null ) return;
+            plots.Remove( plotName );
+            plot.plt.PlotHLine( 0, color: Color.Black, lineWidth: 1 );
+
+            foreach( var i in plots )
+            {
+                double fftSpacing = SRate / i.Value.Length;
+                plot.plt.PlotSignal( i.Value, sampleRate: fftSpacing, markerSize: 0 );
+            }
+            plot.Render();
+        }
+        public double[] GetData( string key )
+        {
+            return plots[key];
+        }
+        public void RenamePlot( string oldname, string newname )
+        {
+            var oldvalue = plots[oldname];
+            plots.Add( newname, oldvalue );
+            plots.Remove( oldname );
+        }
+
+        private readonly FormsPlot plot;
+        private readonly ListBox listBox;
+        private readonly Dictionary<string, double[]> plots;
+        public double SRate { get; set; }
+        private const double defaultSampleRate = 32000;
+
     }
 }

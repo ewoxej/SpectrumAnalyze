@@ -11,7 +11,18 @@ namespace SpectrumAnalyzer
         {
             InitializeComponent();
             plot = new SpectrumPlot( plot1, listBox1 );
-            audioProc = new AudioProc( 0 );
+            audioProc = new AudioProc();
+            var devices = audioProc.ScanSoundCards();
+            foreach(var i in devices)
+            {
+                comboBox1.Items.Add( i );
+            }
+            if( devices.Count != 0 )
+            {
+                comboBox1.SelectedIndex = 0;
+                audioProc.DeviceIndex = comboBox1.SelectedIndex;
+                rec_btn.Enabled = true;
+            }
             textTimer = new TextTimer();
             unnamedIndex = 0;
         }
@@ -22,7 +33,7 @@ namespace SpectrumAnalyzer
 
         private void Btn_close_Click( object sender, EventArgs e )
         {
-            plot.RemovePlot( m_currentPlot );
+            plot.RemovePlot( currentPlot );
         }
         private void Rec_btn_Click( object sender, EventArgs e )
         {
@@ -30,12 +41,12 @@ namespace SpectrumAnalyzer
             rec_btn.Enabled = false;
             TimerCallback tm = new TimerCallback( ( obj ) =>
             {
-                textTimer.add();
+                textTimer.Add();
                 lbl_timer.Invoke( new MethodInvoker( delegate { lbl_timer.Text = textTimer.ToString(); } ) );
-                plot.SetSampleRate( audioProc.getSampleRate() );
+                plot.SRate = audioProc.GetSampleRate();
             } );
             timer = new Timer( tm, 0, 0, 1000 );
-            audioProc.startRecording();
+            audioProc.StartRecording();
         }
 
         private void Stop_btn_Click( object sender, EventArgs e )
@@ -43,18 +54,18 @@ namespace SpectrumAnalyzer
             stop_btn.Enabled = false;
             rec_btn.Enabled = true;
             timer.Dispose();
-            audioProc.stopRecording();
-            textTimer.reset();
-            var vals = audioProc.getFft();
+            audioProc.StopRecording();
+            textTimer.Reset();
+            var vals = audioProc.GetFft();
             plot.AddPlot( vals, "unnamed" + unnamedIndex );
             unnamedIndex++;
         }
 
         private void Btn_save_Click( object sender, EventArgs e )
         {
-            var data = plot.GetData( m_currentPlot );
+            var data = plot.GetData( currentPlot );
             string fileName = PlotDataIO.Save( data );
-            changeSavedFileName( fileName );
+            ChangeSavedFileName( fileName );
         }
 
         private void Btn_open_Click( object sender, EventArgs e )
@@ -63,7 +74,7 @@ namespace SpectrumAnalyzer
             string filename = PlotDataIO.Restore( ref data );
             plot.AddPlot( data, filename );
         }
-        private void changeSavedFileName( string newName )
+        private void ChangeSavedFileName( string newName )
         {
             if( newName == null ) return;
             var index = listBox1.Items.IndexOf( CurrentPlot );
@@ -73,25 +84,31 @@ namespace SpectrumAnalyzer
 
         }
 
-        private SpectrumPlot plot;
-        private AudioProc audioProc;
+        private readonly SpectrumPlot plot;
+        private readonly AudioProc audioProc;
         private Timer timer;
-        private TextTimer textTimer;
-        private string m_currentPlot;
+        private readonly TextTimer textTimer;
+        private string currentPlot;
         private int unnamedIndex;
         public string CurrentPlot
         {
-            get { return m_currentPlot; }
+            get { return currentPlot; }
             set
             {
-                m_currentPlot = value;
-                listBox1.SelectedIndex = listBox1.Items.IndexOf( m_currentPlot );
-                lbl_name.Text = m_currentPlot;
-                if( m_currentPlot.Contains( "unnamed" ) )
+                currentPlot = value;
+                label1.Text = "Peak frequency: " + plot.CalculatePeakFrequency( currentPlot );
+                listBox1.SelectedIndex = listBox1.Items.IndexOf( currentPlot );
+                lbl_name.Text = currentPlot;
+                if( currentPlot.Contains( "unnamed" ) )
                     btn_save.Enabled = true;
                 else
                     btn_save.Enabled = false;
             }
+        }
+
+        private void ComboBox1_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            audioProc.DeviceIndex = comboBox1.SelectedIndex;
         }
     }
 

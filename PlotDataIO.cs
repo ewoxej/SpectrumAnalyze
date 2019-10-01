@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SpectrumAnalyzer
@@ -12,9 +9,11 @@ namespace SpectrumAnalyzer
     {
         public static string Save( double[] dataArray )
         {
-            System.IO.Stream myStream;
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.RestoreDirectory = true;
+            Stream myStream;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog
+            {
+                RestoreDirectory = true
+            };
             string str = null;
             if( saveFileDialog1.ShowDialog() == DialogResult.OK )
             {
@@ -44,12 +43,11 @@ namespace SpectrumAnalyzer
             string[] bits = line.Split( ' ' );
             foreach( string bit in bits )
             {
-                double value;
-                if( !double.TryParse( bit, out value ) )
-                {
-                    Console.WriteLine( "Bad value" );
-                }
-                vals.Add( value );
+                    if( !double.TryParse( bit, out double value ) )
+                    {
+                        Console.WriteLine( "Bad value" );
+                    }
+                    vals.Add( value );
             }
         }
             data = vals.ToArray();
