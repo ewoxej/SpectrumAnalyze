@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SpectrumAnalyzer
 {
@@ -7,6 +9,7 @@ namespace SpectrumAnalyzer
     {
         public int DeviceIndex { get; set; }
         private NAudio.Wave.WaveInEvent wvEvent;
+        private WaveFileWriter waveFile = null;
         List<Int16> dataPcm;
         double[] dataFft;
         private void AudioMonitorInitialize(
@@ -15,7 +18,7 @@ namespace SpectrumAnalyzer
                 int bufferMilliseconds = 50, bool start = true
             )
         {
-            if( wvEvent == null )
+            if ( wvEvent == null )
             {
                 wvEvent = new NAudio.Wave.WaveInEvent
                 {
@@ -38,6 +41,7 @@ namespace SpectrumAnalyzer
         }
         private void OnDataAvailable( object sender, NAudio.Wave.WaveInEventArgs args )
         {
+            waveFile.Write(args.Buffer, 0, args.BytesRecorded);
             int bytesPerSample = wvEvent.WaveFormat.BitsPerSample / 8;
             int samplesRecorded = args.BytesRecorded / bytesPerSample;
             if( dataPcm == null )
@@ -70,10 +74,14 @@ namespace SpectrumAnalyzer
             }
         }
 
-        public void StartRecording()
+        public void StartRecording(int unnamedIndex)
         {
+            var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
+            Directory.CreateDirectory(outputFolder);
+            var outputFilePath = Path.Combine(outputFolder, "unnamed"+unnamedIndex.ToString()+".wav");
+            waveFile = new WaveFileWriter(outputFilePath, new NAudio.Wave.WaveFormat(32_000, 16, 1));
             AudioMonitorInitialize( DeviceIndex );
-            if( dataPcm != null )
+            if ( dataPcm != null )
                 dataPcm.Clear();
             dataFft = null;
         }
@@ -97,6 +105,12 @@ namespace SpectrumAnalyzer
             {
                 wvEvent.StopRecording();
                 wvEvent = null;
+            }
+
+            if (waveFile != null)
+            {
+                waveFile.Dispose();
+                waveFile = null;
             }
         }
     }

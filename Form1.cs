@@ -46,7 +46,7 @@ namespace SpectrumAnalyzer
                 plot.SRate = audioProc.GetSampleRate();
             } );
             timer = new Timer( tm, 0, 0, 1000 );
-            audioProc.StartRecording();
+            audioProc.StartRecording(unnamedIndex);
         }
 
         private void Stop_btn_Click( object sender, EventArgs e )
@@ -64,7 +64,7 @@ namespace SpectrumAnalyzer
         private void Btn_save_Click( object sender, EventArgs e )
         {
             var data = plot.GetData( currentPlot );
-            string fileName = PlotDataIO.Save( data );
+            string fileName = PlotDataIO.Save( data,currentPlot );
             ChangeSavedFileName( fileName );
         }
 
@@ -99,6 +99,7 @@ namespace SpectrumAnalyzer
                 label1.Text = "Peak frequency: " + plot.CalculatePeakFrequency( currentPlot );
                 listBox1.SelectedIndex = listBox1.Items.IndexOf( currentPlot );
                 lbl_name.Text = currentPlot;
+                btn_play.Enabled = true;
                 if( currentPlot.Contains( "unnamed" ) )
                     btn_save.Enabled = true;
                 else
@@ -109,6 +110,10 @@ namespace SpectrumAnalyzer
         private void ComboBox1_SelectedIndexChanged( object sender, EventArgs e )
         {
             audioProc.DeviceIndex = comboBox1.SelectedIndex;
+        }
+
+        private void Btn_play_Click(object sender, EventArgs e)
+        {
         }
     }
 

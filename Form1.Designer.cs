@@ -40,6 +40,7 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.btn_play = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rec_btn
@@ -84,7 +85,7 @@
             // 
             // btn_open
             // 
-            this.btn_open.Location = new System.Drawing.Point(541, 24);
+            this.btn_open.Location = new System.Drawing.Point(638, 24);
             this.btn_open.Name = "btn_open";
             this.btn_open.Size = new System.Drawing.Size(65, 23);
             this.btn_open.TabIndex = 4;
@@ -95,7 +96,7 @@
             // btn_save
             // 
             this.btn_save.Enabled = false;
-            this.btn_save.Location = new System.Drawing.Point(612, 24);
+            this.btn_save.Location = new System.Drawing.Point(709, 24);
             this.btn_save.Name = "btn_save";
             this.btn_save.Size = new System.Drawing.Size(65, 23);
             this.btn_save.TabIndex = 5;
@@ -115,7 +116,7 @@
             // 
             // btn_close
             // 
-            this.btn_close.Location = new System.Drawing.Point(695, 24);
+            this.btn_close.Location = new System.Drawing.Point(792, 24);
             this.btn_close.Name = "btn_close";
             this.btn_close.Size = new System.Drawing.Size(65, 23);
             this.btn_close.TabIndex = 8;
@@ -158,11 +159,23 @@
             this.label2.TabIndex = 12;
             this.label2.Text = "Opened plots:";
             // 
+            // btn_play
+            // 
+            this.btn_play.Enabled = false;
+            this.btn_play.Location = new System.Drawing.Point(567, 24);
+            this.btn_play.Name = "btn_play";
+            this.btn_play.Size = new System.Drawing.Size(65, 23);
+            this.btn_play.TabIndex = 13;
+            this.btn_play.Text = "Play";
+            this.btn_play.UseVisualStyleBackColor = true;
+            this.btn_play.Click += new System.EventHandler(this.Btn_play_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(876, 519);
+            this.Controls.Add(this.btn_play);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
@@ -196,6 +209,7 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btn_play;
     }
 }
 
