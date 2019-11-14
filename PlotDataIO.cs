@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace SpectrumAnalyzer
 {
     class PlotDataIO
     {
-        public static string Save( double[] dataArray,String number )
+        public static string Save( double[] dataArray,String number,String duration )
         {
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
@@ -28,13 +31,30 @@ namespace SpectrumAnalyzer
                     myStream.Close();
                 }
             }
-            var zipFile = ZipFile.Open(str+".zip", ZipArchiveMode.Create);
+            MetaData info = new MetaData();
+            info.DateOfCreation = DateTime.Now;
+            info.originName = number.ToString();
+            info.Duration = duration;
+            //fill info
+            DataContractSerializer dcs = new DataContractSerializer(typeof(MetaData));
+            using (Stream stream = new FileStream(str + ".xml", FileMode.Create, FileAccess.Write))
+            {
+                using (XmlDictionaryWriter writer =
+                    XmlDictionaryWriter.CreateTextWriter(stream, Encoding.UTF8))
+                {
+                    writer.WriteStartDocument();
+                    dcs.WriteObject(writer, info);
+                }
+            }
+                var zipFile = ZipFile.Open(str+".zip", ZipArchiveMode.Create);
             zipFile.CreateEntryFromFile(str, "plot.txt");
+            zipFile.CreateEntryFromFile(str+".xml", "meta.xml");
             var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
             var outputFilePath = Path.Combine(outputFolder, number + ".wav");
             zipFile.CreateEntryFromFile(outputFilePath, "audio.wav");
             zipFile.Dispose();
             File.Delete(str);
+            File.Delete(str + ".xml");
             File.Delete(outputFilePath);
             return str;
         }

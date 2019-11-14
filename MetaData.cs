@@ -11,10 +11,10 @@ namespace SpectrumAnalyzer
     class MetaData
     {
         [DataMember]
-        String Duration { get; set; }
+        public String Duration { get; set; }
         [DataMember]
-        DateTime DateOfCreation { get; set; }
+        public DateTime DateOfCreation { get; set; }
         [DataMember]
-        String originName { get; set; }
+        public String originName { get; set; }
     }
 }

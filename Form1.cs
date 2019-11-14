@@ -69,7 +69,7 @@ namespace SpectrumAnalyzer
         private void Btn_save_Click(object sender, EventArgs e)
         {
             var data = plot.GetData(currentPlot);
-            string fileName = PlotDataIO.Save(data, currentPlot);
+            string fileName = PlotDataIO.Save(data, currentPlot,textTimer.ToString());
             ChangeSavedFileName(fileName);
         }
 
