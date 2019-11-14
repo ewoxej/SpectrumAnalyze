@@ -7,6 +7,7 @@
         {
             seconds = sec;
         }
+
         public void Add( int sec = 1 )
         {
             seconds += sec;
