@@ -11,7 +11,7 @@ namespace SpectrumAnalyzer
 {
     class PlotDataIO
     {
-        public static string Save( double[] dataArray,String number,String duration )
+        public static PlotEntity Save(PlotEntity entity )
         {
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
@@ -25,71 +25,69 @@ namespace SpectrumAnalyzer
                 {
                     TextWriter tw = new StreamWriter( myStream );
                     str = saveFileDialog1.FileName;
-                    foreach( double s in dataArray )
+                    entity.Name = str;
+                    foreach( double s in entity.BuildData )
                         tw.WriteLine( s.ToString() );
                     tw.Close();
                     myStream.Close();
                 }
             }
-            MetaData info = new MetaData();
-            info.DateOfCreation = DateTime.Now;
-            info.originName = number.ToString();
-            info.Duration = duration;
-            //fill info
-            DataContractSerializer dcs = new DataContractSerializer(typeof(MetaData));
+            DataContractSerializer dcs = new DataContractSerializer(typeof(PlotEntity));
             using (Stream stream = new FileStream(str + ".xml", FileMode.Create, FileAccess.Write))
             {
                 using (XmlDictionaryWriter writer =
                     XmlDictionaryWriter.CreateTextWriter(stream, Encoding.UTF8))
                 {
                     writer.WriteStartDocument();
-                    dcs.WriteObject(writer, info);
+                    dcs.WriteObject(writer, entity);
                 }
             }
-                var zipFile = ZipFile.Open(str+".zip", ZipArchiveMode.Create);
-            zipFile.CreateEntryFromFile(str, "plot.txt");
+            var zipFile = ZipFile.Open(str+".zip", ZipArchiveMode.Create);
             zipFile.CreateEntryFromFile(str+".xml", "meta.xml");
-            var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
-            var outputFilePath = Path.Combine(outputFolder, number + ".wav");
-            zipFile.CreateEntryFromFile(outputFilePath, "audio.wav");
+            zipFile.CreateEntryFromFile(entity.AudioFilePath, "audio.wav");
             zipFile.Dispose();
             File.Delete(str);
             File.Delete(str + ".xml");
-            File.Delete(outputFilePath);
-            return str;
+            File.Delete(entity.AudioFilePath);
+            return entity;
         }
-    public static string Restore(ref double[] data)
+
+    public static PlotEntity Restore()
     {
-            var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
+            PlotEntity entity = new PlotEntity();
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             if ( openFileDialog1.ShowDialog() == DialogResult.Cancel )
             return null;
         string filename = openFileDialog1.FileName;
-        List<double> vals = new List<double>();
             using (ZipArchive zip = ZipFile.Open(filename, ZipArchiveMode.Read))
                 foreach (ZipArchiveEntry entry in zip.Entries)
-                    if (entry.Name == "plot.txt")
+                {
+                    if (entry.Name == "meta.xml")
                     {
-                        File.Delete(Path.Combine(outputFolder, "plot.txt"));
-                        entry.ExtractToFile(Path.Combine(outputFolder, "plot.txt"));
+                        File.Delete("meta.xml");
+                        entry.ExtractToFile("meta.xml");
                     }
-            TextReader reader = File.OpenText(Path.Combine(outputFolder, "plot.txt"));
-        string line;
-        while( (line = reader.ReadLine()) != null )
-        {
-            string[] bits = line.Split( ' ' );
-            foreach( string bit in bits )
+                }
+            DataContractSerializer dcs = new DataContractSerializer(typeof(PlotEntity));
+            using (Stream stream = new FileStream("meta.xml", FileMode.Open,FileAccess.ReadWrite))
             {
-                    if( !double.TryParse( bit, out double value ) )
-                    {
-                        Console.WriteLine( "Bad value" );
-                    }
-                    vals.Add( value );
+                using (XmlDictionaryReader xmlreader =
+                    XmlDictionaryReader.CreateTextReader(stream, new XmlDictionaryReaderQuotas()))
+                {
+                    entity = (PlotEntity)dcs.ReadObject(xmlreader);
+                }
             }
-        }
-            reader.Dispose();
-            data = vals.ToArray();
-            return filename;
+            using (ZipArchive zip = ZipFile.Open(filename, ZipArchiveMode.Read))
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                    if (entry.Name == "audio.wav")
+                    {
+                        File.Delete(entity.AudioFilePath);
+                        entry.ExtractToFile(entity.AudioFilePath);
+                    }
+                }
+            File.Delete("meta.xml");
+            return entity;
     }
 }
 }

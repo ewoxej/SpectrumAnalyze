@@ -11,7 +11,9 @@ namespace SpectrumAnalyzer
         private NAudio.Wave.WaveInEvent wvEvent;
         private WaveFileWriter waveFile = null;
         List<Int16> dataPcm;
+        private String outputFilePath;
         double[] dataFft;
+        DateTime begin, end;
         private void AudioMonitorInitialize(
                 int DeviceIndex, int sampleRate = 32_000,
                 int bitRate = 16, int channels = 1,
@@ -74,16 +76,17 @@ namespace SpectrumAnalyzer
             }
         }
 
-        public void StartRecording(int unnamedIndex)
+        public void StartRecording(String fileName)
         {
             var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
             Directory.CreateDirectory(outputFolder);
-            var outputFilePath = Path.Combine(outputFolder, "unnamed"+unnamedIndex.ToString()+".wav");
+            outputFilePath = Path.Combine(outputFolder, fileName+".wav");
             waveFile = new WaveFileWriter(outputFilePath, new NAudio.Wave.WaveFormat(32_000, 16, 1));
             AudioMonitorInitialize( DeviceIndex );
             if ( dataPcm != null )
                 dataPcm.Clear();
             dataFft = null;
+            begin = DateTime.Now;
         }
 
         public double[] GetFft()
@@ -96,10 +99,15 @@ namespace SpectrumAnalyzer
         {
             return wvEvent.WaveFormat.SampleRate;
         }
-        public void StopRecording()
+        public double getDuration()
         {
-            if( dataPcm == null )
-                return;
+            return (end - begin).TotalSeconds;
+        }
+        public String StopRecording()
+        {
+            end = DateTime.Now;
+            if (dataPcm == null)
+                return string.Empty;
             UpdateFFT();
             if( wvEvent != null )
             {
@@ -112,6 +120,7 @@ namespace SpectrumAnalyzer
                 waveFile.Dispose();
                 waveFile = null;
             }
+            return outputFilePath;
         }
     }
 }

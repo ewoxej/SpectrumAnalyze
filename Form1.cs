@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Media;
@@ -9,12 +10,16 @@ using Timer = System.Threading.Timer;
 
 namespace SpectrumAnalyzer
 {
+    
     public partial class Form1 : Form
     {
+        List<PlotEntity> plots;
+        PlotBuilder plotBuilder;
         public Form1()
         {
             InitializeComponent();
-            plot = new SpectrumPlot(plot1, listBox1);
+            plotBuilder = new PlotBuilder(plot1);
+            plots = new List<PlotEntity>();
             audioProc = new AudioProc();
             player = new SoundPlayer();
             var devices = audioProc.ScanSoundCards();
@@ -28,90 +33,61 @@ namespace SpectrumAnalyzer
                 audioProc.DeviceIndex = comboBox1.SelectedIndex;
                 rec_btn.Enabled = true;
             }
-            textTimer = new TextTimer();
-            unnamedIndex = 0;
+            textTimer = new AudioTimer(lbl_timer);
+            currentIndex = 0;
         }
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CurrentPlot = listBox1.GetItemText(listBox1.SelectedItem);
+            lbl_name.Text = plots[currentIndex].Name;
         }
 
         private void Btn_close_Click(object sender, EventArgs e)
         {
-            plot.RemovePlot(currentPlot);
+            plotBuilder.remove(currentIndex);
         }
         private void Rec_btn_Click(object sender, EventArgs e)
         {
             stop_btn.Enabled = true;
             rec_btn.Enabled = false;
-            TimerCallback tm = new TimerCallback((obj) =>
-           {
-               textTimer.Add();
-               lbl_timer.Invoke(new MethodInvoker(delegate { lbl_timer.Text = textTimer.ToString(); }));
-               plot.SRate = audioProc.GetSampleRate();
-           });
-            timer = new Timer(tm, 0, 0, 1000);
-            audioProc.StartRecording(unnamedIndex);
+            textTimer.reset();
+            textTimer.start();
+            audioProc.StartRecording("unnamed"+DateTime.Now.ToString());
         }
 
         private void Stop_btn_Click(object sender, EventArgs e)
         {
+            var newEntity = new PlotEntity
+            {
+                BuildData = audioProc.GetFft(),
+                AudioFilePath = audioProc.StopRecording(),
+                CreationDate = DateTime.Now,
+                Duration = audioProc.getDuration()
+            };
+            plots.Add(newEntity);
+            currentIndex++;
+            plotBuilder.build(newEntity);
             stop_btn.Enabled = false;
             rec_btn.Enabled = true;
-            timer.Dispose();
-            audioProc.StopRecording();
-            textTimer.Reset();
-            var vals = audioProc.GetFft();
-            plot.AddPlot(vals, "unnamed" + unnamedIndex);
-            unnamedIndex++;
+            textTimer.stop();
         }
 
         private void Btn_save_Click(object sender, EventArgs e)
         {
-            var data = plot.GetData(currentPlot);
-            string fileName = PlotDataIO.Save(data, currentPlot,textTimer.ToString());
-            ChangeSavedFileName(fileName);
+            plots[currentIndex] = PlotDataIO.Save(plots[currentIndex]);
         }
 
         private void Btn_open_Click(object sender, EventArgs e)
         {
-            double[] data = null;
-            string filename = PlotDataIO.Restore(ref data);
-            plot.AddPlot(data, filename);
-        }
-        private void ChangeSavedFileName(string newName)
-        {
-            if (newName == null) return;
-            var index = listBox1.Items.IndexOf(CurrentPlot);
-            plot.RenamePlot(CurrentPlot, newName);
-            listBox1.Items[index] = newName;
-            CurrentPlot = newName;
-
+            var newEntity = PlotDataIO.Restore();
+            plots.Add(newEntity);
+            plotBuilder.build(newEntity);
         }
 
-        private readonly SpectrumPlot plot;
         private readonly AudioProc audioProc;
         private SoundPlayer player;
-        private Timer timer;
-        private readonly TextTimer textTimer;
-        private string currentPlot;
-        private int unnamedIndex;
-        public string CurrentPlot
-        {
-            get { return currentPlot; }
-            set
-            {
-                currentPlot = value;
-                label1.Text = "Peak frequency: " + plot.CalculatePeakFrequency(currentPlot);
-                listBox1.SelectedIndex = listBox1.Items.IndexOf(currentPlot);
-                lbl_name.Text = currentPlot;
-                btn_play.Enabled = true;
-                if (currentPlot.Contains("unnamed"))
-                    btn_save.Enabled = true;
-                else
-                    btn_save.Enabled = false;
-            }
-        }
+        private AudioTimer textTimer;
+        private int currentIndex;
+
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -122,44 +98,22 @@ namespace SpectrumAnalyzer
         {
             if (btn_play.Text == "Stop")
             {
-                timer.Dispose();
+                textTimer.stop();
                 player.Stop();
                 btn_play.Text = "Play";
             }
             else
             {
                 var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
-                if (!currentPlot.Contains("unnamed"))
-                {
-                    var filename = currentPlot;
-                    using (ZipArchive zip = ZipFile.Open(filename, ZipArchiveMode.Read))
-                        foreach (ZipArchiveEntry entry in zip.Entries)
-                            if (entry.Name == "audio.wav")
-                            {
-                                entry.ExtractToFile(Path.Combine(outputFolder, "audio.wav"), true);
-                            }
-                    player.SoundLocation = Path.Combine(outputFolder, "audio.wav");
-                }
-                else
-                {
-                    player.SoundLocation = Path.Combine(outputFolder, currentPlot + ".wav");
-                }
+
+                player.SoundLocation = plots[currentIndex].AudioFilePath;
+  
                 btn_play.Text = "Stop";
-                textTimer.Reset();
-                TimerCallback tm = new TimerCallback((obj) =>
-                {
-                    textTimer.Add();
-                    lbl_timer.Invoke(new MethodInvoker(delegate { lbl_timer.Text = textTimer.ToString(); }));
-                });
-                timer = new Timer(tm, 0, 0, 1000);
+                textTimer.reset();
+                textTimer.start();
                 player.Play();
             }
         }
 
-        //void playAudio()
-        //{
-        //    player.PlaySync();
-        //    btn_play.Invoke(new Action(() => { btn_play.Text = "Play"; }));
-        //}
     }
 }

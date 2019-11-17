@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.rec_btn = new System.Windows.Forms.Button();
             this.stop_btn = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -41,6 +42,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.btn_play = new System.Windows.Forms.Button();
+            this.plotEntityBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.buildDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.buildDataBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // rec_btn
@@ -67,6 +74,8 @@
             // 
             // listBox1
             // 
+            this.listBox1.DataSource = this.plotEntityBindingSource;
+            this.listBox1.DisplayMember = "Name";
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 74);
             this.listBox1.Name = "listBox1";
@@ -170,6 +179,19 @@
             this.btn_play.UseVisualStyleBackColor = true;
             this.btn_play.Click += new System.EventHandler(this.Btn_play_Click);
             // 
+            // plotEntityBindingSource
+            // 
+            this.plotEntityBindingSource.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
+            // 
+            // buildDataBindingSource
+            // 
+            this.buildDataBindingSource.DataMember = "BuildData";
+            this.buildDataBindingSource.DataSource = this.plotEntityBindingSource;
+            // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(SpectrumAnalyzer.Form1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -190,6 +212,9 @@
             this.Controls.Add(this.rec_btn);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.buildDataBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -210,6 +235,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btn_play;
+        private System.Windows.Forms.BindingSource form1BindingSource;
+        private System.Windows.Forms.BindingSource plotEntityBindingSource;
+        private System.Windows.Forms.BindingSource buildDataBindingSource;
     }
 }
 
