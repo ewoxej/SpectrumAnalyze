@@ -32,6 +32,7 @@
             this.rec_btn = new System.Windows.Forms.Button();
             this.stop_btn = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.plotEntityBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.lbl_timer = new System.Windows.Forms.Label();
             this.btn_open = new System.Windows.Forms.Button();
             this.btn_save = new System.Windows.Forms.Button();
@@ -42,11 +43,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.btn_play = new System.Windows.Forms.Button();
-            this.plotEntityBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.buildDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.plotEntityBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.buildDataBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,14 +76,17 @@
             // 
             // listBox1
             // 
-            this.listBox1.DataSource = this.plotEntityBindingSource;
-            this.listBox1.DisplayMember = "Name";
+            this.listBox1.DataBindings.Add(new System.Windows.Forms.Binding("Name", this.plotEntityBindingSource1, "Name", true));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 74);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(136, 420);
             this.listBox1.TabIndex = 2;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
+            // 
+            // plotEntityBindingSource1
+            // 
+            this.plotEntityBindingSource1.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
             // 
             // lbl_timer
             // 
@@ -179,14 +184,14 @@
             this.btn_play.UseVisualStyleBackColor = true;
             this.btn_play.Click += new System.EventHandler(this.Btn_play_Click);
             // 
-            // plotEntityBindingSource
-            // 
-            this.plotEntityBindingSource.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
-            // 
             // buildDataBindingSource
             // 
             this.buildDataBindingSource.DataMember = "BuildData";
             this.buildDataBindingSource.DataSource = this.plotEntityBindingSource;
+            // 
+            // plotEntityBindingSource
+            // 
+            this.plotEntityBindingSource.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
             // 
             // form1BindingSource
             // 
@@ -212,8 +217,9 @@
             this.Controls.Add(this.rec_btn);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.buildDataBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -238,6 +244,7 @@
         private System.Windows.Forms.BindingSource form1BindingSource;
         private System.Windows.Forms.BindingSource plotEntityBindingSource;
         private System.Windows.Forms.BindingSource buildDataBindingSource;
+        private System.Windows.Forms.BindingSource plotEntityBindingSource1;
     }
 }
 

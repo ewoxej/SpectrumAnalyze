@@ -13,23 +13,29 @@ namespace SpectrumAnalyzer
         private Label timerLbl;
         private System.Threading.Timer timer;
         int seconds;
+        public delegate void TimerHandler();
+        public event TimerHandler stopped;
+        int totalDuration = -1;
         public AudioTimer(Label timerLabel)
         {
             timerLbl = timerLabel;
             timerLbl.Text = "00:00";
         }
-        public void start()
+        public void start(int duration=-1)
         {
+            totalDuration = duration;
             TimerCallback tm = new TimerCallback((obj) =>
             {
                 seconds++;
                 timerLbl.Invoke(new MethodInvoker(delegate { timerLbl.Text = ToString(); }));
+                if (totalDuration!=-1 && seconds > totalDuration) stop();
             });
             timer = new System.Threading.Timer(tm, 0, 0, 1000);
         }
         public void stop()
         {
             timer.Dispose();
+            stopped?.Invoke();
         }
         public void reset()
         {

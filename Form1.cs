@@ -34,7 +34,8 @@ namespace SpectrumAnalyzer
                 rec_btn.Enabled = true;
             }
             textTimer = new AudioTimer(lbl_timer);
-            currentIndex = 0;
+            currentIndex = -1;
+            listBox1.DataSource = plots;
         }
         private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -51,7 +52,7 @@ namespace SpectrumAnalyzer
             rec_btn.Enabled = false;
             textTimer.reset();
             textTimer.start();
-            audioProc.StartRecording("unnamed"+DateTime.Now.ToString());
+            audioProc.StartRecording("unnamed"+ String.Format("{0:dd_mm_yy_hh_mm_ss}",DateTime.Now));
         }
 
         private void Stop_btn_Click(object sender, EventArgs e)
@@ -68,7 +69,11 @@ namespace SpectrumAnalyzer
             plotBuilder.build(newEntity);
             stop_btn.Enabled = false;
             rec_btn.Enabled = true;
+            btn_play.Enabled = true;
+            btn_save.Enabled = true;
             textTimer.stop();
+            lbl_name.Text = plots[currentIndex].Name;
+            listBox1.Update();
         }
 
         private void Btn_save_Click(object sender, EventArgs e)
@@ -110,7 +115,8 @@ namespace SpectrumAnalyzer
   
                 btn_play.Text = "Stop";
                 textTimer.reset();
-                textTimer.start();
+                textTimer.stopped += (() => btn_play.Invoke(new MethodInvoker(delegate { btn_play.Text = "Play"; })));
+                textTimer.start(Convert.ToInt32(plots[currentIndex].Duration));
                 player.Play();
             }
         }
