@@ -13,15 +13,16 @@ namespace SpectrumAnalyzer
     
     public partial class Form1 : Form
     {
-        List<PlotEntity> plots;
+        AdvancedList plotList;
         PlotBuilder plotBuilder;
         public Form1()
         {
             InitializeComponent();
             plotBuilder = new PlotBuilder(plot1);
-            plots = new List<PlotEntity>();
+            plotList = new AdvancedList(listBox1, lbl_name);
             audioProc = new AudioProc();
             player = new SoundPlayer();
+            FormClosing += onClosing;
             var devices = audioProc.ScanSoundCards();
             foreach (var i in devices)
             {
@@ -34,17 +35,18 @@ namespace SpectrumAnalyzer
                 rec_btn.Enabled = true;
             }
             textTimer = new AudioTimer(lbl_timer);
-            currentIndex = -1;
-            listBox1.DataSource = plots;
-        }
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            lbl_name.Text = plots[currentIndex].Name;
         }
 
         private void Btn_close_Click(object sender, EventArgs e)
         {
-            plotBuilder.remove(currentIndex);
+            plotBuilder.remove(plotList.currentIndex);
+            plotList.removePlot();
+            if(plotList.currentIndex<0)
+            {
+                btn_play.Enabled = false;
+                btn_save.Enabled = false;
+                btn_close.Enabled = false;
+            }
         }
         private void Rec_btn_Click(object sender, EventArgs e)
         {
@@ -59,39 +61,43 @@ namespace SpectrumAnalyzer
         {
             var newEntity = new PlotEntity
             {
+                Name = "unnamed"+ String.Format("{0:dd_mm_yy_hh_mm_ss}", DateTime.Now),
                 BuildData = audioProc.GetFft(),
                 AudioFilePath = audioProc.StopRecording(),
                 CreationDate = DateTime.Now,
                 Duration = audioProc.getDuration()
             };
-            plots.Add(newEntity);
-            currentIndex++;
+            plotList.addPlot(newEntity);
             plotBuilder.build(newEntity);
             stop_btn.Enabled = false;
             rec_btn.Enabled = true;
             btn_play.Enabled = true;
             btn_save.Enabled = true;
+            btn_close.Enabled = true;
             textTimer.stop();
-            lbl_name.Text = plots[currentIndex].Name;
             listBox1.Update();
         }
 
         private void Btn_save_Click(object sender, EventArgs e)
         {
-            plots[currentIndex] = PlotDataIO.Save(plots[currentIndex]);
+            plotList.setCurrentPlot(PlotDataIO.Save(plotList.getCurrentPlot()));
         }
 
         private void Btn_open_Click(object sender, EventArgs e)
         {
             var newEntity = PlotDataIO.Restore();
-            plots.Add(newEntity);
-            plotBuilder.build(newEntity);
+            if (newEntity != null)
+            {
+                plotList.addPlot(newEntity);
+                plotBuilder.build(newEntity);
+                btn_play.Enabled = true;
+                btn_save.Enabled = true;
+            }
         }
 
         private readonly AudioProc audioProc;
         private SoundPlayer player;
         private AudioTimer textTimer;
-        private int currentIndex;
 
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -111,14 +117,20 @@ namespace SpectrumAnalyzer
             {
                 var outputFolder = Path.Combine(Path.GetTempPath(), "Audiofiles");
 
-                player.SoundLocation = plots[currentIndex].AudioFilePath;
+                player.SoundLocation = plotList.getCurrentPlot().AudioFilePath;
   
                 btn_play.Text = "Stop";
                 textTimer.reset();
                 textTimer.stopped += (() => btn_play.Invoke(new MethodInvoker(delegate { btn_play.Text = "Play"; })));
-                textTimer.start(Convert.ToInt32(plots[currentIndex].Duration));
+                textTimer.start(Convert.ToInt32(plotList.getCurrentPlot().Duration));
                 player.Play();
             }
+        }
+        public void onClosing(object sender, EventArgs e)
+        {
+            var path = Path.Combine(Path.GetTempPath(), "Audiofiles");
+            if(Directory.Exists(path))
+            Directory.Delete(path,true);
         }
 
     }

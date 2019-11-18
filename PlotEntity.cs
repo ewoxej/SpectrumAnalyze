@@ -14,6 +14,7 @@ namespace SpectrumAnalyzer
         public double Duration { get; set; }
         [DataMember]
         public DateTime CreationDate { get; set; }
+        [DataMember]
         public string AudioFilePath { get; set; }
     }
 }

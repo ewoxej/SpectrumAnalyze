@@ -64,15 +64,16 @@ namespace SpectrumAnalyzer
                 {
                     if (entry.Name == "meta.xml")
                     {
-                        File.Delete("meta.xml");
-                        entry.ExtractToFile("meta.xml");
+                        entry.ExtractToFile("meta.xml",true);
                     }
                 }
             DataContractSerializer dcs = new DataContractSerializer(typeof(PlotEntity));
             using (Stream stream = new FileStream("meta.xml", FileMode.Open,FileAccess.ReadWrite))
             {
+                var xmlQuotas = new XmlDictionaryReaderQuotas();
+                xmlQuotas.MaxArrayLength = 32768;//костыль
                 using (XmlDictionaryReader xmlreader =
-                    XmlDictionaryReader.CreateTextReader(stream, new XmlDictionaryReaderQuotas()))
+                    XmlDictionaryReader.CreateTextReader(stream, xmlQuotas))
                 {
                     entity = (PlotEntity)dcs.ReadObject(xmlreader);
                 }
@@ -82,8 +83,7 @@ namespace SpectrumAnalyzer
                 {
                     if (entry.Name == "audio.wav")
                     {
-                        File.Delete(entity.AudioFilePath);
-                        entry.ExtractToFile(entity.AudioFilePath);
+                        entry.ExtractToFile(entity.AudioFilePath,true);
                     }
                 }
             File.Delete("meta.xml");

@@ -76,17 +76,11 @@
             // 
             // listBox1
             // 
-            this.listBox1.DataBindings.Add(new System.Windows.Forms.Binding("Name", this.plotEntityBindingSource1, "Name", true));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 74);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(136, 420);
             this.listBox1.TabIndex = 2;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
-            // 
-            // plotEntityBindingSource1
-            // 
-            this.plotEntityBindingSource1.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
             // 
             // lbl_timer
             // 
@@ -99,7 +93,7 @@
             // 
             // btn_open
             // 
-            this.btn_open.Location = new System.Drawing.Point(638, 24);
+            this.btn_open.Location = new System.Drawing.Point(854, 24);
             this.btn_open.Name = "btn_open";
             this.btn_open.Size = new System.Drawing.Size(65, 23);
             this.btn_open.TabIndex = 4;
@@ -110,7 +104,7 @@
             // btn_save
             // 
             this.btn_save.Enabled = false;
-            this.btn_save.Location = new System.Drawing.Point(709, 24);
+            this.btn_save.Location = new System.Drawing.Point(925, 24);
             this.btn_save.Name = "btn_save";
             this.btn_save.Size = new System.Drawing.Size(65, 23);
             this.btn_save.TabIndex = 5;
@@ -130,7 +124,8 @@
             // 
             // btn_close
             // 
-            this.btn_close.Location = new System.Drawing.Point(792, 24);
+            this.btn_close.Enabled = false;
+            this.btn_close.Location = new System.Drawing.Point(1008, 24);
             this.btn_close.Name = "btn_close";
             this.btn_close.Size = new System.Drawing.Size(65, 23);
             this.btn_close.TabIndex = 8;
@@ -176,7 +171,7 @@
             // btn_play
             // 
             this.btn_play.Enabled = false;
-            this.btn_play.Location = new System.Drawing.Point(567, 24);
+            this.btn_play.Location = new System.Drawing.Point(783, 24);
             this.btn_play.Name = "btn_play";
             this.btn_play.Size = new System.Drawing.Size(65, 23);
             this.btn_play.TabIndex = 13;
@@ -184,24 +179,11 @@
             this.btn_play.UseVisualStyleBackColor = true;
             this.btn_play.Click += new System.EventHandler(this.Btn_play_Click);
             // 
-            // buildDataBindingSource
-            // 
-            this.buildDataBindingSource.DataMember = "BuildData";
-            this.buildDataBindingSource.DataSource = this.plotEntityBindingSource;
-            // 
-            // plotEntityBindingSource
-            // 
-            this.plotEntityBindingSource.DataSource = typeof(SpectrumAnalyzer.PlotEntity);
-            // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(SpectrumAnalyzer.Form1);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(876, 519);
+            this.ClientSize = new System.Drawing.Size(1085, 519);
             this.Controls.Add(this.btn_play);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
