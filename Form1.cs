@@ -10,18 +10,20 @@ using Timer = System.Threading.Timer;
 
 namespace SpectrumAnalyzer
 {
-    
+
     public partial class Form1 : Form
     {
         AdvancedList plotList;
         PlotBuilder plotBuilder;
+        FormElementsLogic formLogic;
         public Form1()
         {
             InitializeComponent();
             plotBuilder = new PlotBuilder(plot1);
-            plotList = new AdvancedList(listBox1, lbl_name);
+            plotList = new AdvancedList(listBox1, lbl_name, lbl_frequency);
             audioProc = new AudioProc();
             player = new SoundPlayer();
+            formLogic = new FormElementsLogic(rec_btn, stop_btn, btn_open, btn_save, btn_close, btn_play);
             FormClosing += onClosing;
             var devices = audioProc.ScanSoundCards();
             foreach (var i in devices)
@@ -41,27 +43,24 @@ namespace SpectrumAnalyzer
         {
             plotBuilder.remove(plotList.currentIndex);
             plotList.removePlot();
-            if(plotList.currentIndex<0)
+            if (plotList.currentIndex < 0)
             {
-                btn_play.Enabled = false;
-                btn_save.Enabled = false;
-                btn_close.Enabled = false;
+                formLogic.changeState(APP_STATE.NoFile);
             }
         }
         private void Rec_btn_Click(object sender, EventArgs e)
         {
-            stop_btn.Enabled = true;
-            rec_btn.Enabled = false;
+            formLogic.changeState(APP_STATE.Recording);
             textTimer.reset();
             textTimer.start();
-            audioProc.StartRecording("unnamed"+ String.Format("{0:dd_mm_yy_hh_mm_ss}",DateTime.Now));
+            audioProc.StartRecording("unnamed" + String.Format("{0:dd_mm_yy_hh_mm_ss}", DateTime.Now));
         }
 
         private void Stop_btn_Click(object sender, EventArgs e)
         {
             var newEntity = new PlotEntity
             {
-                Name = "unnamed"+ String.Format("{0:dd_mm_yy_hh_mm_ss}", DateTime.Now),
+                Name = "unnamed" + String.Format("{0:dd_mm_yy_hh_mm_ss}", DateTime.Now),
                 BuildData = audioProc.GetFft(),
                 AudioFilePath = audioProc.StopRecording(),
                 CreationDate = DateTime.Now,
@@ -69,29 +68,32 @@ namespace SpectrumAnalyzer
             };
             plotList.addPlot(newEntity);
             plotBuilder.build(newEntity);
-            stop_btn.Enabled = false;
-            rec_btn.Enabled = true;
-            btn_play.Enabled = true;
-            btn_save.Enabled = true;
-            btn_close.Enabled = true;
+            formLogic.changeState(APP_STATE.OpenedUnsaved);
             textTimer.stop();
             listBox1.Update();
         }
 
-        private void Btn_save_Click(object sender, EventArgs e)
+        private void onProgressChanged(object sender, PlotEventArgs e)
         {
-            plotList.setCurrentPlot(PlotDataIO.Save(plotList.getCurrentPlot()));
+            progressBar_saving.Invoke(new MethodInvoker(delegate { progressBar_saving.Value = e.Progress; }));
+        }
+        private async void Btn_save_ClickAsync(object sender, EventArgs e)
+        {
+            PlotDataIO saverObject = new PlotDataIO();
+            saverObject.progressChanged += onProgressChanged;
+            plotList.setCurrentPlot(await saverObject.Save(plotList.getCurrentPlot()));
         }
 
-        private void Btn_open_Click(object sender, EventArgs e)
+        private async void  Btn_open_Click(object sender, EventArgs e)
         {
-            var newEntity = PlotDataIO.Restore();
+            PlotDataIO objectRestore = new PlotDataIO();
+            objectRestore.progressChanged += onProgressChanged;
+            var newEntity = await objectRestore.Restore();
             if (newEntity != null)
             {
                 plotList.addPlot(newEntity);
                 plotBuilder.build(newEntity);
-                btn_play.Enabled = true;
-                btn_save.Enabled = true;
+                formLogic.changeState(APP_STATE.OpenedSaved);
             }
         }
 

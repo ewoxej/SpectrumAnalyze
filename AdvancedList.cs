@@ -11,12 +11,14 @@ namespace SpectrumAnalyzer
     {
         private List<PlotEntity> plotEntities;
         private Label currentLabel;
+        private Label currentFreq;
         private ListBox currentListBox;
         public int currentIndex { get; set; }
-        public AdvancedList(ListBox listbox,Label label)
+        public AdvancedList(ListBox listbox,Label label,Label freq)
         {
             plotEntities = new List<PlotEntity>();
             currentLabel = label;
+            currentFreq = freq;
             currentListBox = listbox;
             currentIndex = -1;
             currentListBox.SelectedIndexChanged += onIndexChanged;
@@ -45,10 +47,12 @@ namespace SpectrumAnalyzer
             {
                 var currentEntity = plotEntities[currentIndex];
                 currentLabel.Text = currentEntity.Name;
+                currentFreq.Text = currentEntity.PeakFrequency.ToString();
             }
             else
             {
                 currentLabel.Text = "Current";
+                currentFreq.Text = "0";
             }
         }
         public void removePlot()

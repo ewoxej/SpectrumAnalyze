@@ -80,6 +80,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormElementsLogic.cs" />
     <Compile Include="PlotBuilder.cs" />
     <Compile Include="PlotDataIO.cs" />
     <Compile Include="PlotEntity.cs" />

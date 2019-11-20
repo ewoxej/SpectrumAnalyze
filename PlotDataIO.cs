@@ -4,14 +4,24 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace SpectrumAnalyzer
 {
+    public class PlotEventArgs
+    {
+        public PlotEventArgs(int s) { Progress = s; }
+        public int Progress { get; } // readonly
+    }
+
     class PlotDataIO
     {
-        public static PlotEntity Save(PlotEntity entity )
+        public delegate void PlotIOEventHandler(object sender, PlotEventArgs e);
+
+        public event PlotIOEventHandler progressChanged;
+        public async Task<PlotEntity> Save(PlotEntity entity )
         {
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
@@ -19,7 +29,8 @@ namespace SpectrumAnalyzer
                 RestoreDirectory = true
             };
             string str = null;
-            if( saveFileDialog1.ShowDialog() == DialogResult.OK )
+
+            if ( saveFileDialog1.ShowDialog() == DialogResult.OK )
             {
                 if( (myStream = saveFileDialog1.OpenFile()) != null )
                 {
@@ -32,6 +43,7 @@ namespace SpectrumAnalyzer
                     myStream.Close();
                 }
             }
+            progressChanged(this, new PlotEventArgs(10));
             DataContractSerializer dcs = new DataContractSerializer(typeof(PlotEntity));
             using (Stream stream = new FileStream(str + ".xml", FileMode.Create, FileAccess.Write))
             {
@@ -42,17 +54,23 @@ namespace SpectrumAnalyzer
                     dcs.WriteObject(writer, entity);
                 }
             }
+            progressChanged(this, new PlotEventArgs(30));
             var zipFile = ZipFile.Open(str+".zip", ZipArchiveMode.Create);
+            progressChanged(this, new PlotEventArgs(40));
             zipFile.CreateEntryFromFile(str+".xml", "meta.xml");
+            progressChanged(this, new PlotEventArgs(50));
             zipFile.CreateEntryFromFile(entity.AudioFilePath, "audio.wav");
+            progressChanged(this, new PlotEventArgs(70));
             zipFile.Dispose();
             File.Delete(str);
             File.Delete(str + ".xml");
             File.Delete(entity.AudioFilePath);
+            progressChanged(this, new PlotEventArgs(100));
+            progressChanged(this, new PlotEventArgs(0));
             return entity;
         }
 
-    public static PlotEntity Restore()
+    public async Task<PlotEntity> Restore()
     {
             PlotEntity entity = new PlotEntity();
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -67,6 +85,7 @@ namespace SpectrumAnalyzer
                         entry.ExtractToFile("meta.xml",true);
                     }
                 }
+            progressChanged(this, new PlotEventArgs(10));
             DataContractSerializer dcs = new DataContractSerializer(typeof(PlotEntity));
             using (Stream stream = new FileStream("meta.xml", FileMode.Open,FileAccess.ReadWrite))
             {
@@ -78,6 +97,7 @@ namespace SpectrumAnalyzer
                     entity = (PlotEntity)dcs.ReadObject(xmlreader);
                 }
             }
+            progressChanged(this, new PlotEventArgs(50));
             using (ZipArchive zip = ZipFile.Open(filename, ZipArchiveMode.Read))
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
@@ -87,6 +107,8 @@ namespace SpectrumAnalyzer
                     }
                 }
             File.Delete("meta.xml");
+            progressChanged(this, new PlotEventArgs(100));
+            progressChanged(this, new PlotEventArgs(0));
             return entity;
     }
 }

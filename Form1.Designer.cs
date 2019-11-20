@@ -46,6 +46,8 @@
             this.buildDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.plotEntityBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.progressBar_saving = new System.Windows.Forms.ProgressBar();
+            this.lbl_frequency = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.buildDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.plotEntityBindingSource)).BeginInit();
@@ -110,7 +112,7 @@
             this.btn_save.TabIndex = 5;
             this.btn_save.Text = "Save";
             this.btn_save.UseVisualStyleBackColor = true;
-            this.btn_save.Click += new System.EventHandler(this.Btn_save_Click);
+            this.btn_save.Click += new System.EventHandler(this.Btn_save_ClickAsync);
             // 
             // lbl_name
             // 
@@ -179,11 +181,30 @@
             this.btn_play.UseVisualStyleBackColor = true;
             this.btn_play.Click += new System.EventHandler(this.Btn_play_Click);
             // 
+            // progressBar_saving
+            // 
+            this.progressBar_saving.Location = new System.Drawing.Point(12, 514);
+            this.progressBar_saving.Name = "progressBar_saving";
+            this.progressBar_saving.Size = new System.Drawing.Size(1061, 23);
+            this.progressBar_saving.TabIndex = 14;
+            // 
+            // lbl_frequency
+            // 
+            this.lbl_frequency.AutoSize = true;
+            this.lbl_frequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbl_frequency.Location = new System.Drawing.Point(385, 474);
+            this.lbl_frequency.Name = "lbl_frequency";
+            this.lbl_frequency.Size = new System.Drawing.Size(18, 20);
+            this.lbl_frequency.TabIndex = 15;
+            this.lbl_frequency.Text = "0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1085, 519);
+            this.ClientSize = new System.Drawing.Size(1085, 549);
+            this.Controls.Add(this.lbl_frequency);
+            this.Controls.Add(this.progressBar_saving);
             this.Controls.Add(this.btn_play);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -227,6 +248,8 @@
         private System.Windows.Forms.BindingSource plotEntityBindingSource;
         private System.Windows.Forms.BindingSource buildDataBindingSource;
         private System.Windows.Forms.BindingSource plotEntityBindingSource1;
+        private System.Windows.Forms.ProgressBar progressBar_saving;
+        private System.Windows.Forms.Label lbl_frequency;
     }
 }
 
