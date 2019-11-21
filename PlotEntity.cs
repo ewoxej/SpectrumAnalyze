@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SpectrumAnalyzer
@@ -8,11 +9,7 @@ namespace SpectrumAnalyzer
     {
         private void calculatePeakFrequency()
         {
-            PeakFrequency = 10;
-        }
-        public PlotEntity()
-        {
-            calculatePeakFrequency();
+            PeakFrequency = BuildData.Max();
         }
         [DataMember]
         public double[] BuildData { get; set; }
@@ -25,6 +22,6 @@ namespace SpectrumAnalyzer
         [DataMember]
         public string AudioFilePath { get; set; }
         [DataMember]
-        public int PeakFrequency { get; set; }
+        public double PeakFrequency { get; set; }
     }
 }

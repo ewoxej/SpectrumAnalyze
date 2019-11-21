@@ -18,6 +18,7 @@ namespace SpectrumAnalyzer
         FormElementsLogic formLogic;
         public Form1()
         {
+            Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "Audiofiles"));
             InitializeComponent();
             plotBuilder = new PlotBuilder(plot1);
             plotList = new AdvancedList(listBox1, lbl_name, lbl_frequency);
@@ -68,7 +69,7 @@ namespace SpectrumAnalyzer
             };
             plotList.addPlot(newEntity);
             plotBuilder.build(newEntity);
-            formLogic.changeState(APP_STATE.OpenedUnsaved);
+            formLogic.changeState(APP_STATE.Opened);
             textTimer.stop();
             listBox1.Update();
         }
@@ -93,7 +94,7 @@ namespace SpectrumAnalyzer
             {
                 plotList.addPlot(newEntity);
                 plotBuilder.build(newEntity);
-                formLogic.changeState(APP_STATE.OpenedSaved);
+                formLogic.changeState(APP_STATE.Opened);
             }
         }
 

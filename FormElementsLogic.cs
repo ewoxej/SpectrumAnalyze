@@ -10,8 +10,7 @@ namespace SpectrumAnalyzer
     enum APP_STATE
     {
         NoFile,
-        OpenedSaved,
-        OpenedUnsaved,
+        Opened,
         Recording,
     }
     class FormElementsLogic
@@ -43,17 +42,7 @@ namespace SpectrumAnalyzer
                         btn_play.Enabled = false;
                     }
                     break;
-                case APP_STATE.OpenedSaved:
-                    {
-                        btn_rec.Enabled = true;
-                        btn_stop.Enabled = false;
-                        btn_open.Enabled = true;
-                        btn_save.Enabled = false;
-                        btn_close.Enabled = true;
-                        btn_play.Enabled = true;
-                    }
-                    break;
-                case APP_STATE.OpenedUnsaved:
+                case APP_STATE.Opened:
                     {
                         btn_rec.Enabled = true;
                         btn_stop.Enabled = false;

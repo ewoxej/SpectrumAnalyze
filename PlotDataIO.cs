@@ -103,6 +103,7 @@ namespace SpectrumAnalyzer
                 {
                     if (entry.Name == "audio.wav")
                     {
+                        entity.AudioFilePath = Path.Combine(Path.Combine(Path.GetTempPath(),"Audiofiles"), "audio" + String.Format("{0:dd_mm_yy_hh_mm_ss}", entity.CreationDate));
                         entry.ExtractToFile(entity.AudioFilePath,true);
                     }
                 }
