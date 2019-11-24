@@ -90,7 +90,7 @@ namespace SpectrumAnalyzer
             using (Stream stream = new FileStream("meta.xml", FileMode.Open,FileAccess.ReadWrite))
             {
                 var xmlQuotas = new XmlDictionaryReaderQuotas();
-                xmlQuotas.MaxArrayLength = 32768;//костыль
+                xmlQuotas.MaxArrayLength = 32768;//extended array length
                 using (XmlDictionaryReader xmlreader =
                     XmlDictionaryReader.CreateTextReader(stream, xmlQuotas))
                 {

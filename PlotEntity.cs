@@ -7,7 +7,7 @@ namespace SpectrumAnalyzer
     [DataContract]
     public class PlotEntity
     {
-        private void calculatePeakFrequency()
+        public void calculatePeakFrequency()
         {
             PeakFrequency = BuildData.Max();
         }

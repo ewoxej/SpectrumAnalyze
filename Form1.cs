@@ -67,6 +67,7 @@ namespace SpectrumAnalyzer
                 CreationDate = DateTime.Now,
                 Duration = audioProc.getDuration()
             };
+            newEntity.calculatePeakFrequency();
             plotList.addPlot(newEntity);
             plotBuilder.build(newEntity);
             formLogic.changeState(APP_STATE.Opened);
